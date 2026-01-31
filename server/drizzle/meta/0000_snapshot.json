@@ -1,5 +1,5 @@
 {
-  "id": "4d7a1496-592f-408d-bca7-8f5cc98c211d",
+  "id": "9424203f-e600-4251-8a28-4fd24f57471b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -16,33 +16,40 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "title": {
           "name": "title",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "amount": {
           "name": "amount",
-          "type": "varchar(255)",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
         "category": {
           "name": "category",
-          "type": "varchar(255)",
+          "type": "category_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "now()"
         }
       },
