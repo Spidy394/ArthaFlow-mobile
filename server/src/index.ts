@@ -1,122 +1,19 @@
 import express from "express";
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { addTransactionSchema, deleteTransactionSchema, getTranscationsSchema, transaction } from "./db/schema";
-import { ZodError } from "zod";
-import { desc, eq, sql as drizzleSql } from "drizzle-orm";
 import rateLimiter from "./middleware/rateLimiter";
+import transactionRouter from "./route/transactionRoutes"
 
 const app = express();
-const sql = neon(process.env.DB_URL!);
-const db = drizzle({ client: sql });
 
 app.use(express.json());
 app.use(rateLimiter);
 
-app.get("/api/transaction/:userId", async (req, res) => {
-    try {
-        const data = getTranscationsSchema.parse({
-            userId: req.params.userId,
-            ...req.query // for filter in future
-        });
+app.use("/api/transaction", transactionRouter)
 
-        const transactions = await db.select().from(transaction).where(eq(transaction.userId, data.userId)).orderBy(desc(transaction.createdAt));
-        console.log(`Succesfully fetched transcations of ${data.userId}`);
-        res.status(200).json(transactions)
-    } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                message: "Invalid query parameters"
-            });
-        }
-        console.log("Error fetching the transaction: ", error);
-        res.status(500).json({
-            message: "Internal server error"
-        });
-    }
+app.get("/health", (req, res) => {
+    res.send({
+        "status": "ok"
+    });
 });
-
-app.post("/api/transaction", async (req, res) => {
-    try {
-        const data = addTransactionSchema.parse(req.body)
-
-        const result = await db.insert(transaction).values(data).returning();
-        console.log(`Added an entry for ${data.userId}`);
-
-        res.status(201).json(result[0]);
-    } catch (error) {
-        if( error instanceof ZodError) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
-        }
-        console.log("Error creating the transaction: ", error);
-        res.status(500).json({
-            message: "Internal server error"
-        });
-    }
-});
-
-app.delete("/api/transaction/:id", async (req, res) => {
-    try {
-        const { id } = deleteTransactionSchema.parse(req.params);
-
-        const result = await db.delete(transaction).where(eq(transaction.id, id)).returning();
-
-        if( result.length === 0){
-            return res.status(404).json({
-                message: "Not found"
-            });
-        } else {
-            res.status(200).json({
-                message: "deleted succesfully"
-            });
-            console.log(`Dropped entry ${id}`);
-        }
-    } catch (error) {
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                message: "Invalid query parameters"
-            });
-        }
-        console.log("Error deleting the transaction: ", error);
-        res.status(500).json({
-            message: "Internal server error"
-        });
-    }   
-});
-
-app.get("/api/transactions/summary/:userId", async(req, res) => {
-    try {
-        const { userId } = req.params;
-
-        const result = await db.select({
-            income: drizzleSql`
-                COALESCE(SUM(CASE WHEN ${transaction.category} = 'income'
-                THEN ${transaction.amount} ELSE 0 END), 0)
-            `,
-            expense: drizzleSql`
-                COALESCE(SUM(CASE WHEN ${transaction.category} = 'expense' 
-                THEN ${transaction.amount} ELSE 0 END), 0)
-            `,
-        }).from(transaction).where(eq(transaction.userId, userId));
-
-        const { income, expense } = result[0] as { income: number, expense: number };
-        const balance = income - expense;
-
-        res.status(200).json({
-            "income": income,
-            "expense": expense,
-            "balance": balance
-        });
-        console.log(`Succesfully fetched summary of ${userId}`);
-    } catch (error) {
-        console.log("Error getting summary: ", error)
-        res.status(500).json({
-            message: "Internal server error"
-        });
-    }
-})
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is live at: ${process.env.PORT}`);

@@ -1,4 +1,11 @@
-import { pgTable, serial, text, timestamp, pgEnum, numeric } from "drizzle-orm/pg-core";
+import { 
+  pgTable, 
+  serial, 
+  text, 
+  timestamp, 
+  pgEnum, 
+  numeric 
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -31,4 +38,8 @@ export const getTranscationsSchema = z.object({
 
 export const deleteTransactionSchema = z.object({
   id: z.coerce.number().int().positive(), // change to number
+});
+
+export const userIdParamSchema = z.object({
+  userId: z.string().min(1),
 });
