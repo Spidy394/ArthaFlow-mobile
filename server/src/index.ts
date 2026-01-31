@@ -4,12 +4,14 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { addTransactionSchema, deleteTransactionSchema, getTranscationsSchema, transaction } from "./db/schema";
 import { ZodError } from "zod";
 import { desc, eq, sql as drizzleSql } from "drizzle-orm";
+import rateLimiter from "./middleware/rateLimiter";
 
 const app = express();
 const sql = neon(process.env.DB_URL!);
 const db = drizzle({ client: sql });
 
 app.use(express.json());
+app.use(rateLimiter);
 
 app.get("/api/transaction/:userId", async (req, res) => {
     try {
