@@ -24,6 +24,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.1",
     "cors": "^2.8.6",
+    "cron": "^4.4.0",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "express": "^5.2.1",
