@@ -1,11 +1,13 @@
 {
-  "name": "server",
+  "name": "arthflow",
+  "version": "1.0.0",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "db:push": "drizzle-kit push",
+    "start": "bun src/index.ts",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
