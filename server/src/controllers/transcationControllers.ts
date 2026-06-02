@@ -89,11 +89,11 @@ export const getTranscationsSummaryByUserId = async(req: Request, res: Response)
 
         const result = await db.select({
             income: drizzleSql`
-                COALESCE(SUM(CASE WHEN ${transaction.category} = 'income'
+                COALESCE(SUM(CASE WHEN ${transaction.type} = 'income'
                 THEN ${transaction.amount} ELSE 0 END), 0)
             `,
             expense: drizzleSql`
-                COALESCE(SUM(CASE WHEN ${transaction.category} = 'expense' 
+                COALESCE(SUM(CASE WHEN ${transaction.type} = 'expense'
                 THEN ${transaction.amount} ELSE 0 END), 0)
             `,
         }).from(transaction).where(eq(transaction.userId, userId));

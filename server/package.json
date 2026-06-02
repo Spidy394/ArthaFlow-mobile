@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/ws": "^8.18.1",
     "drizzle-kit": "^0.31.8"
@@ -20,9 +21,11 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@better-auth/expo": "^1.6.13",
     "@neondatabase/serverless": "^1.0.2",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.1",
+    "better-auth": "^1.6.13",
     "cors": "^2.8.6",
     "cron": "^4.4.0",
     "drizzle-orm": "^0.45.1",
